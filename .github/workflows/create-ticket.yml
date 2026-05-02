@@ -1,5 +1,8 @@
 name: Create Ticket
 
+permissions:
+  contents: write
+
 on:
   repository_dispatch:
     types: [new-ticket]
