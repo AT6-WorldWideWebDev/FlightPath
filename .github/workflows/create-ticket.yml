@@ -26,5 +26,5 @@ jobs:
           git config user.name "FlightPath Bot"
           git config user.email "bot@example.com"
           git add .
-          git commit -m "New ticket ${{ github.event.client_payload.id }}"
+          git commit -m "New ticket ${{ github.event.client_payload.id }}" || echo "No changes to commit"
           git push
