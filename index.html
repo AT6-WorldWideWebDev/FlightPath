@@ -1,3 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FlightPath</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Leaflet + Draw -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+</head>
 <body>
     <!-- Loading Screen -->
     <div id="loading-screen">
@@ -7,11 +23,32 @@
 
     <!-- Main App -->
     <div id="app" style="display:none;">
-        <h1>FlightPath</h1>
-        <p>Welcome to your lawn‑management dashboard.</p>
+        <header class="topbar">
+            <h1>FlightPath</h1>
+            <span class="tagline">Mark where the yard needs cutting</span>
+        </header>
 
-        <!-- Add map, buttons, UI here later -->
+        <main class="layout">
+            <section class="sidebar">
+                <h2>Instructions</h2>
+                <ol>
+                    <li>Use the tools on the map to draw the area of the yard.</li>
+                    <li>When prompted, enter a cutting level from 1–7.</li>
+                    <li>Your drawing is saved so it can be used later.</li>
+                </ol>
+                <p class="note">
+                    Tip: Zoom in and out with pinch or scroll. Drag to move the map.
+                </p>
+            </section>
+
+            <section class="content">
+                <h2>Yard Map</h2>
+                <div id="map"></div>
+                <div id="status"></div>
+            </section>
+        </main>
     </div>
 
     <script src="app.js"></script>
 </body>
+</html>
