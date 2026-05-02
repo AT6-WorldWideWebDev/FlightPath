@@ -1,1 +1,27 @@
+name: Create Ticket
 
+on:
+  repository_dispatch:
+    types: [new-ticket]
+
+jobs:
+  create-ticket:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Create ticket file
+        run: |
+          mkdir -p data/tickets
+          FILE="data/tickets/ticket-${{ github.event.client_payload.id }}.json"
+          echo '${{ toJson(github.event.client_payload) }}' > $FILE
+
+      - name: Commit and push
+        run: |
+          git config user.name "FlightPath Bot"
+          git config user.email "bot@example.com"
+          git add .
+          git commit -m "New ticket ${{ github.event.client_payload.id }}"
+          git push
