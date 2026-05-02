@@ -1,3 +1,6 @@
+// Simple in-memory store for areas
+const areas = [];
+
 // Loading transition
 window.addEventListener("load", () => {
     setTimeout(() => {
@@ -11,11 +14,13 @@ window.addEventListener("load", () => {
 // Initialize map once DOM is ready
 document.addEventListener("DOMContentLoaded", () => {
     const statusEl = document.getElementById("status");
-    if (!statusEl) return;
+    const areasListEl = document.getElementById("areas-list");
 
-    statusEl.textContent = "Use the drawing tools on the map to mark areas that need cutting.";
+    if (statusEl) {
+        statusEl.textContent = "Use the drawing tools on the map to mark areas that need cutting.";
+    }
 
-    // Center on Toronto for now; you can change to your yard coords later
+    // Center on Toronto for now; change to your yard later if you want
     const map = L.map('map').setView([43.6532, -79.3832], 18);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -39,62 +44,91 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     map.addControl(drawControl);
 
+    // When a new shape is created
     map.on(L.Draw.Event.CREATED, function (event) {
         const layer = event.layer;
-        drawnItems.addLayer(layer);
 
         const level = prompt("Cutting level (1–7):");
         const numericLevel = Number(level);
 
         if (!level || isNaN(numericLevel) || numericLevel < 1 || numericLevel > 7) {
             alert("Invalid level. Please enter a number from 1 to 7.");
-            drawnItems.removeLayer(layer);
             return;
         }
 
+        // Style the shape based on level
+        const color = getLevelColor(numericLevel);
+        layer.setStyle({
+            color: color,
+            fillColor: color,
+            fillOpacity: 0.4
+        });
+
+        drawnItems.addLayer(layer);
+
+        const id = Date.now();
         const shapeData = layer.toGeoJSON();
         shapeData.properties = {
+            id,
             level: numericLevel
         };
 
-        statusEl.textContent = `Area saved with cutting level ${numericLevel}. Saving…`;
+        areas.push({
+            id,
+            level: numericLevel,
+            layer,
+            geojson: shapeData
+        });
 
-        saveShapeToGitHub(shapeData)
-            .then(() => {
-                statusEl.textContent = `Area saved with cutting level ${numericLevel}.`;
-            })
-            .catch(err => {
-                console.error(err);
-                statusEl.textContent = "There was a problem saving this area.";
-            });
+        if (statusEl) {
+            statusEl.textContent = `Area saved with cutting level ${numericLevel}.`;
+        }
+
+        renderAreasList(areasListEl, areas, map);
     });
 });
 
-// Sends the drawn shape to your GitHub Action
-async function saveShapeToGitHub(shape) {
-    // IMPORTANT:
-    // 1. Replace YOURNAME with your GitHub username
-    // 2. Replace YOUR_TOKEN with a GitHub token (or move this call to a backend)
-    //    Never expose a real long‑lived token in production.
-    const response = await fetch("https://api.github.com/repos/YOURNAME/FlightPath/dispatches", {
-        method: "POST",
-        headers: {
-            "Accept": "application/vnd.github+json",
-            "Authorization": "Bearer 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"
-        },
-        body: JSON.stringify({
-            event_type: "new-ticket",
-            client_payload: {
-                id: Date.now(),
-                type: "cutting-area",
-                shape: shape,
-                timestamp: new Date().toISOString()
-            }
-        })
-    });
+// Map level to color
+function getLevelColor(level) {
+    if (level <= 2) return "#8be28b";      // light green
+    if (level <= 4) return "#c7e26b";      // yellow-green
+    if (level <= 6) return "#f2c46b";      // orange
+    return "#f28b7b";                      // red
+}
 
-    if (!response.ok) {
-        const text = await response.text();
-        throw new Error("GitHub API error: " + text);
+// Render the sidebar list of areas
+function renderAreasList(listEl, areas, map) {
+    if (!listEl) return;
+
+    listEl.innerHTML = "";
+
+    if (areas.length === 0) {
+        const li = document.createElement("li");
+        li.className = "empty";
+        li.textContent = "No areas yet. Draw on the map to add one.";
+        listEl.appendChild(li);
+        return;
     }
+
+    areas.forEach(area => {
+        const li = document.createElement("li");
+
+        const label = document.createElement("span");
+        label.textContent = `Level ${area.level}`;
+        label.className = "area-level";
+
+        const idSpan = document.createElement("span");
+        idSpan.textContent = `#${area.id.toString().slice(-4)}`;
+        idSpan.className = "area-id";
+
+        li.appendChild(label);
+        li.appendChild(idSpan);
+
+        li.addEventListener("click", () => {
+            const bounds = area.layer.getBounds();
+            map.fitBounds(bounds, { padding: [20, 20] });
+        });
+
+        listEl.appendChild(li);
+    });
 }
