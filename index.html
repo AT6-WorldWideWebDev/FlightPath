@@ -24,25 +24,53 @@
     <!-- Main App -->
     <div id="app" style="display:none;">
         <header class="topbar">
-            <h1>FlightPath</h1>
-            <span class="tagline">Mark where the yard needs cutting</span>
+            <div class="topbar-left">
+                <h1>FlightPath</h1>
+                <span class="tagline">Mark where the yard needs cutting</span>
+            </div>
+            <div class="topbar-right">
+                <span class="badge">Family Map Mode</span>
+            </div>
         </header>
 
         <main class="layout">
-            <section class="sidebar">
-                <h2>Instructions</h2>
+            <aside class="sidebar">
+                <h2>How to use</h2>
                 <ol>
                     <li>Use the tools on the map to draw the area of the yard.</li>
-                    <li>When prompted, enter a cutting level from 1–7.</li>
-                    <li>Your drawing is saved so it can be used later.</li>
+                    <li>When asked, enter a cutting level from <strong>1–7</strong>.</li>
+                    <li>The area will be saved in the list below.</li>
                 </ol>
-                <p class="note">
-                    Tip: Zoom in and out with pinch or scroll. Drag to move the map.
-                </p>
-            </section>
+
+                <div class="legend">
+                    <h3>Cutting levels</h3>
+                    <div class="legend-row">
+                        <span class="legend-color level-1"></span><span>1 – Very light trim</span>
+                    </div>
+                    <div class="legend-row">
+                        <span class="legend-color level-3"></span><span>3 – Normal cut</span>
+                    </div>
+                    <div class="legend-row">
+                        <span class="legend-color level-5"></span><span>5 – Shorter cut</span>
+                    </div>
+                    <div class="legend-row">
+                        <span class="legend-color level-7"></span><span>7 – Very short / problem area</span>
+                    </div>
+                </div>
+
+                <div class="areas-panel">
+                    <h2>Marked areas</h2>
+                    <ul id="areas-list">
+                        <li class="empty">No areas yet. Draw on the map to add one.</li>
+                    </ul>
+                </div>
+            </aside>
 
             <section class="content">
-                <h2>Yard Map</h2>
+                <h2>Yard map</h2>
+                <p class="content-subtitle">
+                    Draw shapes on the map to show where the yard needs cutting and how intense it should be.
+                </p>
                 <div id="map"></div>
                 <div id="status"></div>
             </section>
