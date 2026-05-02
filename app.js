@@ -80,7 +80,7 @@ async function saveShapeToGitHub(shape) {
         method: "POST",
         headers: {
             "Accept": "application/vnd.github+json",
-            "Authorization": "Bearer YOUR_TOKEN"
+            "Authorization": "Bearer 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"
         },
         body: JSON.stringify({
             event_type: "new-ticket",
